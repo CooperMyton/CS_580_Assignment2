@@ -5,12 +5,16 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float turnSpeed = 20f;
+    public AudioClip wallHitSound; //added sound trigger effect
+    public float wallHitCooldown = 0.5f;
 
     Animator m_Animator;
     Rigidbody m_Rigidbody;
     AudioSource m_AudioSource;
     Vector3 m_Movement;
     Quaternion m_Rotation = Quaternion.identity;
+
+    float m_WallHitTimer;
 
     void Start ()
     {
@@ -52,5 +56,21 @@ public class PlayerMovement : MonoBehaviour
     {
         m_Rigidbody.MovePosition (m_Rigidbody.position + m_Movement * m_Animator.deltaPosition.magnitude);
         m_Rigidbody.MoveRotation (m_Rotation);
+    }
+    void Update()
+    {
+        if (m_WallHitTimer > 0)
+        {
+            m_WallHitTimer -= Time.deltaTime;
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Wall") && m_Movement.magnitude > 0 && m_WallHitTimer <= 0)
+        {
+            m_AudioSource.PlayOneShot(wallHitSound, 2f);
+            m_WallHitTimer = wallHitCooldown;
+        }
     }
 }
