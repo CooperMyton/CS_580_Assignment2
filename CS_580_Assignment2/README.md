@@ -7,4 +7,4 @@ Linear Interpolation Implementation (Cooper): While approaching enemier, there w
 
 Particle Effect Implementation (Simon):
 
-Sound Effect Implementation (Cooper):
+Sound Effect Implementation (Cooper): Added a thud sound effect when the character runs into a wall. To make the sound happen just run into a wall
