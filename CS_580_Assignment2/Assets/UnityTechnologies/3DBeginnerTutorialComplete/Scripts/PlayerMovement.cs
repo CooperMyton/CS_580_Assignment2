@@ -7,6 +7,9 @@ public class PlayerMovement : MonoBehaviour
     public float turnSpeed = 20f;
     public AudioClip wallHitSound; //added sound trigger effect
     public float wallHitCooldown = 0.5f;
+    public Transform GoalArrow;
+    public Transform GoalLocation;
+    [SerializeField] private Vector3 arrowModelOffset = new Vector3(-90f,0f,0f);
 
     Animator m_Animator;
     Rigidbody m_Rigidbody;
@@ -29,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
         float vertical = Input.GetAxis ("Vertical");
         
         m_Movement.Set(horizontal, 0f, vertical);
-        m_Movement.Normalize ();
+        m_Movement.Normalize();
 
         bool hasHorizontalInput = !Mathf.Approximately (horizontal, 0f);
         bool hasVerticalInput = !Mathf.Approximately (vertical, 0f);
@@ -50,6 +53,29 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 desiredForward = Vector3.RotateTowards (transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
         m_Rotation = Quaternion.LookRotation (desiredForward);
+
+        // update goal arrow to point towards the goal
+        
+        Vector3 goalVector = GoalLocation.position - m_Rigidbody.position;
+        goalVector.y = 0f;
+        if (goalVector.sqrMagnitude > 0.0001f)
+        {
+            goalVector.Normalize();
+            Vector3 forward = GoalArrow.forward;
+            forward.y = 0f;
+            forward.Normalize();
+
+            float dot = Mathf.Clamp(Vector3.Dot(forward, goalVector), -1f, 1f);
+            float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+            float sign = Mathf.Sign(Vector3.Cross(forward, goalVector).y);
+
+            if (Mathf.Abs(Vector3.Cross(forward, goalVector).y) > 0.0001f)
+            {
+                Quaternion arrowOffset = Quaternion.Euler(arrowModelOffset);
+                Quaternion goalRotation = Quaternion.Euler(0f, angle * sign, 0f);
+                GoalArrow.rotation = goalRotation * arrowOffset;
+            }
+        }
     }
 
     void OnAnimatorMove ()
