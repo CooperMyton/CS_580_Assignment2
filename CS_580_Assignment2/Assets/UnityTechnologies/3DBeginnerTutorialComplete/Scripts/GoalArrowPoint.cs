@@ -6,7 +6,7 @@ public class GoalArrowPoint : MonoBehaviour
     // originally just had the arrow as a child of the player, but that caused issues with following the player rotation
     public Transform player;
     public Transform GoalLocation;
-    [SerializeField] private Vector3 arrowModelOffset = new Vector3(0f,90f,90f);
+    private Vector3 arrowModelOffset = new Vector3(90f,0f,0f);
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -27,9 +27,7 @@ public class GoalArrowPoint : MonoBehaviour
         if (goalVector.sqrMagnitude > 0.0001f)
         {
             goalVector.Normalize();
-            Vector3 forward = transform.forward;
-            forward.y = 0f;
-            forward.Normalize();
+            Vector3 forward = Vector3.forward;
 
             float dot = Mathf.Clamp(Vector3.Dot(forward, goalVector), -1f, 1f);
             float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
